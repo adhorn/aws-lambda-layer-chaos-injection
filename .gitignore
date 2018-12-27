@@ -1,0 +1,5 @@
+*.pyc
+*.zip
+.DS_Store
+.vendor
+_pycache_

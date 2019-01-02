@@ -1,4 +1,8 @@
 from __future__ import division, unicode_literals
+
+import sys
+sys.path.insert(0, '/opt/python/.vendor')
+
 from ssm_cache import SSMParameter
 import time
 import random

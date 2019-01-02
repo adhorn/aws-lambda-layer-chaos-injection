@@ -1,3 +1,4 @@
+from local_settings import environment
 from chaos_lib import delayit
 from chaos_lib import SessionWithDelay
 

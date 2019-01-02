@@ -1,4 +1,4 @@
-zfrom chaos_lib import delayit
+from chaos_lib import delayit
 from chaos_lib import SessionWithDelay
 
 

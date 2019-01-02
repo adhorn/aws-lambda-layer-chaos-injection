@@ -1,8 +1,8 @@
 from __future__ import division, unicode_literals
+from ssm_cache import SSMParameter
 import time
 import random
 import json
-from ssm_cache import SSMParameter
 import requests
 
 

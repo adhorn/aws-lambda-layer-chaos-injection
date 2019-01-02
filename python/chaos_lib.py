@@ -61,6 +61,7 @@ class SessionWithDelay(requests.Session):
         self.delay = delay
 
     def request(self, method, url, **kwargs):
-        print('Added {}ms of delay'.format(self.delay))
+        print('Added {1}ms of delay to {0:s}'.format(
+            method, self.delay))
         time.sleep(self.delay / 1000.0)
         return super(SessionWithDelay, self).request(method, url, **kwargs)

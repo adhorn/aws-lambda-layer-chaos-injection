@@ -1,4 +1,4 @@
-## "Using AWS Lambda layers to inject lantency into AWS Lambda functions"
+## Using AWS Lambda layers to inject lantency into AWS Lambda functions
 
 ## Building the zip package on a MAC (easy on Linux)
 * If you use Linux, please skip directly to the section (4) below: Install the Python the requirements. 

@@ -16,7 +16,7 @@ def get_config():
         value = json.loads(param.value)
         delay = value["delay"]
         isEnabled = value["isEnabled"]
-        if isEnabled and delay > 0:
+        if isEnabled and delay >= 0:
             return delay
         elif isEnabled and delay <= 0:
             return -1

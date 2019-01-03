@@ -3,7 +3,7 @@ from __future__ import division, unicode_literals
 import sys
 sys.path.insert(0, '/opt/python/.vendor')
 
-from ssm_cache import SSMParameter
+from ssm_cache import SSMParameter, InvalidParameterError
 import time
 import random
 import json
@@ -22,12 +22,15 @@ def get_config():
             return -1
         else:
             return 0
-    except Exception as e:
-        print(e)
+    except InvalidParameterError as e:
+        print("{} does not exist in SSM".format(e))
+        return 0
+    except KeyError as e:
+        print("{} is not a valid Key in the SSM configuration".format(e))
         return 0
 
 
-def delayit(method):
+def delayit(func):
     def latency(*args, **kw):
         delay = get_config()
         start = time.time()
@@ -40,14 +43,12 @@ def delayit(method):
             if random.random() > 0.5:
                 # random sleep time between 1 and 10 seconds
                 time.sleep(random.randint(1, 10))
-        else:
-            pass
 
-        result = method(*args, **kw)
+        result = func(*args, **kw)
         end = time.time()
 
         print('Added {1:.2f}ms to {0:s}'.format(
-            method.__name__,
+            func.__name__,
             (end - start) * 1000
         ))
 

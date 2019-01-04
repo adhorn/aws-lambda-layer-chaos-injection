@@ -1,7 +1,7 @@
 
 ## Injecting Chaos to AWS Lambda functions using Lambda Layers
 
-* See the full blog post describing how to use this library at .. 
+* See the full blog post describing how to install and use this small chaos library [here](https://medium.com/@adhorn/injecting-chaos-to-aws-lambda-functions-using-lambda-layers-2963f996e0ba).
 
 
 ### Building the zip package on a MAC (easy on Linux)

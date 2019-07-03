@@ -3,6 +3,12 @@
 
 * See the full blog post describing how to install and use this small chaos library [here](https://medium.com/@adhorn/injecting-chaos-to-aws-lambda-functions-using-lambda-layers-2963f996e0ba).
 
+### Update by Gunnar Grosch
+Some changes made to be able to control latency injection per function instead of for all functions.
+
+* Each function with the layer attached must have an environment variable named LATENCY_INJECTION_PARAM and containing the name of a parameter in Parameter Store.
+
+* The layer can be easily installed using the serverless.yml template file using Serverless Framework: sls deploy
 
 ### Building the zip package on a MAC (easy on Linux)
 * Regardless if you are using Linux, Mac or Windows, the simplest way to create your ZIP package for Lambda Layer is to use Docker. If you don't use Docker but instead build your package directly in your local environment, you might see an ```invalid ELF header``` error while testing your Lambda function. That's because AWS Lambda needs Linux compatible versions of libraries to execute properly.

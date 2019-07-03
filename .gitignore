@@ -3,3 +3,6 @@
 .DS_Store
 .vendor
 _pycache_
+venv
+.vscode
+.serverless

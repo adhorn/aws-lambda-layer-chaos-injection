@@ -33,14 +33,14 @@ def get_config(config_key):
         isEnabled = value["isEnabled"]
         if not isEnabled:
             return 0
-        key_ = value.get(config_key, 0)
+        key_ = value[config_key]
         return key_
     except InvalidParameterError as e:
         print("{} does not exist in SSM".format(e))
-        return 0
+        raise InvalidParameterError
     except KeyError as e:
         print("{} is not a valid Key in the SSM configuration".format(e))
-        return 0
+        raise KeyError
 
 
 def corrupt_delay(func):

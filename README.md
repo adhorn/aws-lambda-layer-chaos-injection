@@ -44,7 +44,6 @@ Voila! Your package file chaos_lib.zip is ready to be used in Lambda Layer.
 4. Deploy the chaos config in paramater store.
     * run the following command:
         ```
-        $ aws ssm put-parameter --region eu-north-1 --name chaoslambda.config --type String --overwrite --value "{ \"delay\": 400, \"isEnabled\": true, \"error_code\": 404, \"excepti
-on_msg\": \"I really failed seriously\" }"
+        $ aws ssm put-parameter --region eu-north-1 --name chaoslambda.config --type String --overwrite --value "{ \"delay\": 400, \"isEnabled\": true, \"error_code\": 404, \"exception_msg\": \"I really failed seriously\" }"
         ```
 

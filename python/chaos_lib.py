@@ -22,9 +22,6 @@ class SessionWithDelay(requests.Session):
         time.sleep(self.delay / 1000.0)
         return super(SessionWithDelay, self).request(method, url, **kwargs)
 
-    def close(self):
-        self.session.close()
-
 
 def get_config(config_key):
     param = SSMParameter(os.environ['FAILURE_INJECTION_PARAM'])
@@ -33,14 +30,14 @@ def get_config(config_key):
         isEnabled = value["isEnabled"]
         if not isEnabled:
             return 0
-        key_ = value.get(config_key, 0)
+        key_ = value[config_key]
         return key_
     except InvalidParameterError as e:
-        print("{} does not exist in SSM".format(e))
-        return 0
+        # key does not exist in SSM
+        raise InvalidParameterError("{} does not exist in SSM".format(e))
     except KeyError as e:
-        print("{} is not a valid Key in the SSM configuration".format(e))
-        return 0
+        # not a valid Key in the SSM configuration
+        raise KeyError("{} is not a valid Key in the SSM configuration".format(e))
 
 
 def corrupt_delay(func):
@@ -76,7 +73,6 @@ def corrupt_expection(func):
         print("exception_msg from config {}".format(exception_msg))
         print("corrupting now")
         raise Exception(exception_msg)
-        return result
     return wrapper
 
 

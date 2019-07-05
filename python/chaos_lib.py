@@ -11,18 +11,30 @@ import json
 import requests
 
 
-def get_config():
-    param = SSMParameter(os.environ['LATENCY_INJECTION_PARAM'])
+class SessionWithDelay(requests.Session):
+    def __init__(self, delay=None, *args, **kwargs):
+        super(SessionWithDelay, self).__init__(*args, **kwargs)
+        self.delay = delay
+
+    def request(self, method, url, **kwargs):
+        print('Added {1:.2f}ms of delay to {0:s}'.format(
+            method, self.delay))
+        time.sleep(self.delay / 1000.0)
+        return super(SessionWithDelay, self).request(method, url, **kwargs)
+
+    def close(self):
+        self.session.close()
+
+
+def get_config(config_key):
+    param = SSMParameter(os.environ['FAILURE_INJECTION_PARAM'])
     try:
         value = json.loads(param.value)
-        delay = value["delay"]
         isEnabled = value["isEnabled"]
-        if isEnabled and delay >= 0:
-            return delay
-        elif isEnabled and delay <= 0:
-            return -1
-        else:
+        if not isEnabled:
             return 0
+        key_ = value.get(config_key, 0)
+        return key_
     except InvalidParameterError as e:
         print("{} does not exist in SSM".format(e))
         return 0
@@ -31,9 +43,10 @@ def get_config():
         return 0
 
 
-def delayit(func):
+def corrupt_delay(func):
     def latency(*args, **kw):
-        delay = get_config()
+        delay = get_config('delay')
+        print(delay)
         start = time.time()
         # if delay exist, delaying with that value
         if delay > 0:
@@ -52,18 +65,27 @@ def delayit(func):
             func.__name__,
             (end - start) * 1000
         ))
-
         return result
     return latency
 
 
-class SessionWithDelay(requests.Session):
-    def __init__(self, delay=None, *args, **kwargs):
-        super(SessionWithDelay, self).__init__(*args, **kwargs)
-        self.delay = delay
+def corrupt_expection(func):
+    def wrapper(*args, **kwargs):
+        result = func(*args, **kwargs)
+        exception_msg = get_config('exception_msg')
+        print("exception_msg from config {}".format(exception_msg))
+        print("corrupting now")
+        raise Exception(exception_msg)
+        return result
+    return wrapper
 
-    def request(self, method, url, **kwargs):
-        print('Added {1:.2f}ms of delay to {0:s}'.format(
-            method, self.delay))
-        time.sleep(self.delay / 1000.0)
-        return super(SessionWithDelay, self).request(method, url, **kwargs)
+
+def corrupt_statuscode(func):
+    def wrapper(*args, **kwargs):
+        result = func(*args, **kwargs)
+        error_code = get_config('error_code')
+        print("Error from config {}".format(error_code))
+        print("corrupting now")
+        result['statusCode'] = error_code
+        return result
+    return wrapper

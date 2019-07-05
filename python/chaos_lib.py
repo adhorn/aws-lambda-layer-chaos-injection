@@ -4,6 +4,7 @@ import sys
 sys.path.insert(0, '/opt/python/.vendor')
 
 from ssm_cache import SSMParameter, InvalidParameterError
+import os
 import time
 import random
 import json
@@ -11,7 +12,7 @@ import requests
 
 
 def get_config():
-    param = SSMParameter('chaoslambda.config')
+    param = SSMParameter(os.environ['LATENCY_INJECTION_PARAM'])
     try:
         value = json.loads(param.value)
         delay = value["delay"]

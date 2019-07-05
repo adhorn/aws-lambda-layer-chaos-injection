@@ -1,0 +1,20 @@
+service: LatencyInjectionLayer
+
+frameworkVersion: ">=1.34.0 <2.0.0"
+
+provider:
+  name: aws
+
+layers:
+  latencyInjection:
+    path: ./
+    name: ${self:service}-${self:provider.stage}
+    compatibleRuntimes:
+      - python3.7
+    retain: true
+
+package:
+  exclude:
+    - ./**
+  include:
+    - python/**

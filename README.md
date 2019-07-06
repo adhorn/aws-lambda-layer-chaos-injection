@@ -3,18 +3,30 @@
 
 * See the full blog post describing how to install and use this small chaos library [here](https://medium.com/@adhorn/injecting-chaos-to-aws-lambda-functions-using-lambda-layers-2963f996e0ba).
 
-### Changes by Gunnar Grosch
-Some changes made to be able to control injection per function instead of for all functions.
+### Features
+* Support for Latency injection using ```delay```
+* Support for Exception injection using ```exception_msg```
+* Support for HTTP Error status code injection using ```error_code```
+* Using for SSM Parameter Store to control the experiment using ```isEnable```
+* Per Lambda function injection control using Environment variable (```FAILURE_INJECTION_PARAM```) (thanks to Gunnar Grosh)
+* Support for Serverless Framework using ```sls deploy``` (thanks to Gunnar Grosh)
 
-* Each function with the layer attached must have an environment variable named FAILURE_INJECTION_PARAM and containing the name of a parameter in Parameter Store.
+### Parameter Store Object
+```json
+{ 
+    "delay": 200,
+    "isEnabled": true,
+    "error_code": 404,
+    "exception_msg": "I FAILED"
+}
+```
+Deploy the chaos config in paramater store.
+* run the following command:
+    ```
+    $ aws ssm put-parameter --region eu-north-1 --name chaoslambda.config --type String --overwrite --value "{ \"delay\": 400, \"isEnabled\": true, \"error_code\": 404, \"exception_msg\": \"I really failed seriously\" }"
+    ```
 
-* The layer can be easily installed using the serverless.yml template file using Serverless Framework: sls deploy
-
-### Building the zip package on a MAC (easy on Linux)
-* Regardless if you are using Linux, Mac or Windows, the simplest way to create your ZIP package for Lambda Layer is to use Docker. If you don't use Docker but instead build your package directly in your local environment, you might see an ```invalid ELF header``` error while testing your Lambda function. That's because AWS Lambda needs Linux compatible versions of libraries to execute properly.
-
-* That's where Docker comes in handy. With Docker you can very easily run a Linux container locally on your Mac, Windows and Linux computer, install the Python libraries within the container so they're automatically in the right Linux format, and ZIP up the files ready to upload to AWS. You'll need Docker installed first. (https://www.docker.com/products/docker).
-
+### Building and deploying
 
 1. Clone the small chaos experiment library
     * run the following command:
@@ -23,7 +35,13 @@ Some changes made to be able to control injection per function instead of for al
         git clone git@github.com:adhorn/LatencyInjectionLayer.git
         ```
 
-2. Spin-up a docker-lambda container, and install all the Python requirements in a directory call .vendor
+
+
+2. Build the package manually (skip to step 4 if you want to use the serverless framework)
+
+   Regardless if you are using Linux, Mac or Windows, the simplest way to create your ZIP package for Lambda Layer is to use Docker. If you don't use Docker but instead build your package directly in your local environment, you might see an ```invalid ELF header``` error while testing your Lambda function. That's because AWS Lambda needs Linux compatible versions of libraries to execute properly. That's where Docker comes in handy. With Docker you can very easily run a Linux container locally on your Mac, Windows and Linux computer, install the Python libraries within the container so they're automatically in the right Linux format, and ZIP up the files ready to upload to AWS. You'll need Docker installed first. (https://www.docker.com/products/docker).
+
+-  Spin-up a docker-lambda container, and install all the Python requirements in a directory call .vendor
     * run the following command:
 
         ```
@@ -33,17 +51,34 @@ Some changes made to be able to control injection per function instead of for al
     * The -v flag makes the local directory available inside the container in the directory called working. You should now be inside the container with a shell prompt.
 
 
-3. Package your code.
+3. Package your code 
     * run the following commands:
         ```
         $ zip -r chaos_lib.zip ./python
         ```
 
-Voila! Your package file chaos_lib.zip is ready to be used in Lambda Layer.
+        Voila! Your package file chaos_lib.zip is ready to be used in Lambda Layer.
 
-4. Deploy the chaos config in paramater store.
+4. Deploy with Serverless framework
     * run the following command:
         ```
-        $ aws ssm put-parameter --region eu-north-1 --name chaoslambda.config --type String --overwrite --value "{ \"delay\": 400, \"isEnabled\": true, \"error_code\": 404, \"exception_msg\": \"I really failed seriously\" }"
+        sls deploy
         ```
 
+5. Use the (python) method decorators to inject the failure to functions (either the whole Lambda handler or any other functions).
+* For latency injection, use
+```python
+    @corrupt_delay
+``` 
+* For exception injection, use
+```python
+    @corrupt_exception
+```
+
+* For HTTP error status code injection, use
+```python
+    @corrupt_statuscode
+```
+
+
+## Happy breaking!

@@ -7,7 +7,7 @@
 * Support for Latency injection using ```delay```
 * Support for Exception injection using ```exception_msg```
 * Support for HTTP Error status code injection using ```error_code```
-* Using for SSM Parameter Store to control the experiment using ```isEnable```
+* Using for SSM Parameter Store to control the experiment using ```isEnabled```
 * Per Lambda function injection control using Environment variable (```FAILURE_INJECTION_PARAM```) (thanks to Gunnar Grosh)
 * Support for Serverless Framework using ```sls deploy``` (thanks to Gunnar Grosh)
 

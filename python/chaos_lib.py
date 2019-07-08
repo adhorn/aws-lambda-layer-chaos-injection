@@ -29,7 +29,7 @@ def get_config(config_key):
         value = json.loads(param.value)
         if not value["isEnabled"]:
             return 0
-        return value[config_key], value.get('rate', 0)
+        return value[config_key], value.get('rate', 1)
     except InvalidParameterError as e:
         # key does not exist in SSM
         raise InvalidParameterError("{} does not exist in SSM".format(e))

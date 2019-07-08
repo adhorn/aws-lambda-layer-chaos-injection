@@ -10,6 +10,7 @@
 * Using for SSM Parameter Store to control the experiment using ```isEnabled```
 * Per Lambda function injection control using Environment variable (```FAILURE_INJECTION_PARAM```) (thanks to Gunnar Grosh)
 * Support for Serverless Framework using ```sls deploy``` (thanks to Gunnar Grosh)
+* Support for adding rate of failure using ```rate```. (Default rate = 1)
 
 ### Parameter Store Object
 ```json
@@ -17,7 +18,8 @@
     "delay": 200,
     "isEnabled": true,
     "error_code": 404,
-    "exception_msg": "I FAILED"
+    "exception_msg": "I FAILED",
+    "rate": 0.5
 }
 ```
 Deploy the chaos config in paramater store.

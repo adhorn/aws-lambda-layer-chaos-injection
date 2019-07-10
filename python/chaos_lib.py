@@ -28,7 +28,7 @@ def get_config(config_key):
     try:
         value = json.loads(param.value)
         if not value["isEnabled"]:
-            return 0
+            return 0, 1
         return value[config_key], value.get('rate', 1)
     except InvalidParameterError as e:
         # key does not exist in SSM
@@ -41,10 +41,13 @@ def get_config(config_key):
 def corrupt_delay(func):
     def latency(*args, **kw):
         delay, rate = get_config('delay')
+        if not delay:
+            return func(*args, **kw)
         print("delay: {0}, rate: {1}".format(delay, rate))
-        start = time.time()
         # if delay and rate exist, delaying with that value at that rate
+        start = time.time()
         if delay > 0 and rate >= 0:
+
             # add latency approx rate% of the time
             if random.random() <= rate:
                 time.sleep(delay / 1000.0)
@@ -60,10 +63,12 @@ def corrupt_delay(func):
     return latency
 
 
-def corrupt_expection(func):
+def corrupt_exception(func):
     def wrapper(*args, **kwargs):
         result = func(*args, **kwargs)
         exception_msg, rate = get_config('exception_msg')
+        if not exception_msg:
+            return result
         print("exception_msg from config {0} with a rate of {1}".format(exception_msg, rate))
         # add injection approx rate% of the time
         if random.random() <= rate:
@@ -78,6 +83,8 @@ def corrupt_statuscode(func):
     def wrapper(*args, **kwargs):
         result = func(*args, **kwargs)
         error_code, rate = get_config('error_code')
+        if not error_code:
+            return result
         print("Error from config {0} at a rate of {1}".format(error_code, rate))
         # add injection approx rate% of the time
         if random.random() <= rate:

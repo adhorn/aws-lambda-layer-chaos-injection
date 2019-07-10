@@ -1,7 +1,9 @@
 from chaos_lib import corrupt_delay
-from chaos_lib import corrupt_expection
+from chaos_lib import corrupt_exception
 from chaos_lib import corrupt_statuscode
 from chaos_lib import SessionWithDelay
+
+# from chaos_lib import *
 
 
 # def dummy1():
@@ -15,7 +17,7 @@ from chaos_lib import SessionWithDelay
 #     pass
 
 
-# @corrupt_expection
+# @corrupt_exception
 # def lambda_handler(event, context):
 #     return {
 #         'statusCode': 200,
@@ -23,17 +25,17 @@ from chaos_lib import SessionWithDelay
 #     }
 
 
-# @corrupt_delay
-# def lambda_handler(event, context):
-#     return {
-#         'statusCode': 200,
-#         'body': 'Hello from Lambda!'
-#     }
-
-
-@corrupt_statuscode
+@corrupt_delay
 def lambda_handler(event, context):
     return {
         'statusCode': 200,
         'body': 'Hello from Lambda!'
     }
+
+
+# @corrupt_statuscode
+# def lambda_handler(event, context):
+#     return {
+#         'statusCode': 200,
+#         'body': 'Hello from Lambda!'
+#     }

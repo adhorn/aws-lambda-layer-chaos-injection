@@ -15,8 +15,8 @@
 ### Parameter Store Object
 ```json
 { 
-    "delay": 200,
     "isEnabled": true,
+    "delay": 200,
     "error_code": 404,
     "exception_msg": "I FAILED",
     "rate": 0.5

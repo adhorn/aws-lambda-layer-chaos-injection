@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 from __future__ import division, unicode_literals
 
 import sys
@@ -9,6 +11,11 @@ import time
 import random
 import json
 import requests
+
+logger = logging.getLogger(__name__)
+
+__version__ = '0.3.0'
+
 
 
 class SessionWithDelay(requests.Session):
@@ -39,10 +46,33 @@ def get_config(config_key):
 
 
 def corrupt_delay(func):
-    def latency(*args, **kw):
+    """
+    Add delay to the lambda function - delay is returned from the SSM paramater
+    using get_config('delay') which returns a tuple delay, rate.
+
+    Usage::
+
+      >>> from failure_injection import corrupt_delay
+      >>> @corrupt_delay
+      ... def handler(event, context):
+      ...    return {
+                'statusCode': 200,
+                'body': 'Hello from Lambda!'
+             }
+      >>>
+      This will create the follow Log outup (with a delay of 400ms)
+    
+        START RequestId: 5295aa0b-...-50fcfbebea1f Version: $LATEST
+        delay: 400, rate: 1
+        Added 400.61ms to lambda_handler
+        END RequestId: 5295aa0b-...-50fcfbebea1f
+        REPORT RequestId: 5295aa0b-...-50fcfbebea1f Duration: 442.65 ms Billed Duration: 500 ms  Memory Size: 128 MB Max Memory Used: 79 MB
+
+    """
+    def wrapper(*args, **kwargs):
         delay, rate = get_config('delay')
         if not delay:
-            return func(*args, **kw)
+            return func(*args, **kwargs)
         print("delay: {0}, rate: {1}".format(delay, rate))
         # if delay and rate exist, delaying with that value at that rate
         start = time.time()
@@ -52,7 +82,7 @@ def corrupt_delay(func):
             if random.random() <= rate:
                 time.sleep(delay / 1000.0)
 
-        result = func(*args, **kw)
+        result = func(*args, **kwargs)
         end = time.time()
 
         print('Added {1:.2f}ms to {0:s}'.format(
@@ -60,10 +90,34 @@ def corrupt_delay(func):
             (end - start) * 1000
         ))
         return result
-    return latency
+    return wrapper
 
 
 def corrupt_exception(func):
+    """
+    Forces the lambda function to fail and raise an exception
+    using get_config('exception_msg') which returns a tuple exception_msg, rate.
+
+    Usage::
+
+      >>> from failure_injection import corrupt_exception
+      >>> @corrupt_exception
+      ... def handler(event, context):
+      ...    return {
+                'statusCode': 200,
+                'body': 'Hello from Lambda!'
+             }
+      >>>
+      This will create the follow Log outup (with a msg "I failed!")
+    
+    {
+        "errorMessage": "I really failed seriously",
+        "errorType": "Exception",
+        "stackTrace": [
+            "  File \"failure_injection.py\", line 76, in wrapper\n    raise Exception(exception_msg)\n"
+       ]
+    }
+    """
     def wrapper(*args, **kwargs):
         result = func(*args, **kwargs)
         exception_msg, rate = get_config('exception_msg')
@@ -80,6 +134,21 @@ def corrupt_exception(func):
 
 
 def corrupt_statuscode(func):
+    """
+    Forces the lambda function to return with a specific Status Code
+    using get_config('error_code') which returns a tuple error_code, rate.
+
+    Usage::
+
+      >>> from failure_injection import corrupt_statuscode
+      >>> @corrupt_statuscode
+      ... def handler(event, context):
+      ...    return {
+                'statusCode': 200,
+                'body': 'Hello from Lambda!'
+             }
+      >>> { "statusCode": 404, "body": "\"Hello from Lambda!\"" }
+    """
     def wrapper(*args, **kwargs):
         result = func(*args, **kwargs)
         error_code, rate = get_config('error_code')

@@ -1,4 +1,4 @@
-from chaos_lib import get_config
+from failure_injection import get_config
 from ssm_cache import InvalidParameterError
 import unittest
 import os

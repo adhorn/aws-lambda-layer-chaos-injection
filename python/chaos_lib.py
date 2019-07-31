@@ -5,6 +5,7 @@ sys.path.insert(0, '/opt/python/.vendor')
 
 from ssm_cache import SSMParameter, InvalidParameterError
 import os
+import subprocess
 import time
 import random
 import json
@@ -90,6 +91,24 @@ def corrupt_statuscode(func):
         if random.random() <= rate:
             print("corrupting now")
             result['statusCode'] = error_code
+            return result
+        else:
+            return result
+    return wrapper
+
+
+def corrupt_diskspace(func):
+    def wrapper(*args, **kwargs):
+        result = func(*args, **kwargs)
+        file_size, rate = get_config('file_size')
+        if not file_size:
+            return result
+        print("file_size from config {0} with a rate of {1}".format(file_size, rate))
+        # add injection approx rate% of the time
+        if random.random() <= rate:
+            print("corrupting now")
+            o = subprocess.check_output(['dd', 'if=/dev/zero', 'of=/tmp/corrupt-diskspace-'+str(time.time())+'.tmp', 'count=1024', 'bs='+str(file_size*1024)], stderr=subprocess.STDOUT)
+            print(o)
             return result
         else:
             return result

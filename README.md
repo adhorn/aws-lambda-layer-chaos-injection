@@ -9,7 +9,7 @@
 * Support for HTTP Error status code injection using ```error_code```
 * Support for disk space failure injection using ```file_size```
 * Using for SSM Parameter Store to control the experiment using ```isEnabled```
-* Per Lambda function injection control using Environment variable (```FAILURE_INJECTION_PARAM```) (thanks to Gunnar Grosch)
+* Per Lambda function injection control using Environment variable (```FAILURE_INJECTION_PARAM```)
 * Support for Serverless Framework using ```sls deploy``` (thanks to Gunnar Grosch)
 * Support for adding rate of failure using ```rate```. (Default rate = 1)
 

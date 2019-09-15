@@ -7,6 +7,7 @@
 * Support for Latency injection using ```delay```
 * Support for Exception injection using ```exception_msg```
 * Support for HTTP Error status code injection using ```error_code```
+* Support for disk space failure injection using ```file_size```
 * Using for SSM Parameter Store to control the experiment using ```isEnabled```
 * Per Lambda function injection control using Environment variable (```FAILURE_INJECTION_PARAM```) (thanks to Gunnar Grosch)
 * Support for Serverless Framework using ```sls deploy``` (thanks to Gunnar Grosch)
@@ -19,13 +20,14 @@
     "isEnabled": true,
     "error_code": 404,
     "exception_msg": "I FAILED",
+    "file_size": 100,
     "rate": 0.5
 }
 ```
 Deploy the chaos config in paramater store.
 * run the following command:
     ```
-    $ aws ssm put-parameter --region eu-north-1 --name chaoslambda.config --type String --overwrite --value "{ \"delay\": 400, \"isEnabled\": true, \"error_code\": 404, \"exception_msg\": \"I really failed seriously\" }"
+    $ aws ssm put-parameter --region eu-north-1 --name chaoslambda.config --type String --overwrite --value "{ \"delay\": 400, \"isEnabled\": true, \"error_code\": 404, \"exception_msg\": \"I really failed seriously\", \"file_size\": 100, \"rate\": 1 }"
     ```
 
 ### Building and deploying
@@ -80,6 +82,15 @@ Deploy the chaos config in paramater store.
 * For HTTP error status code injection, use
 ```python
     @corrupt_statuscode
+```
+
+* For disk space failure injection, use
+```python
+    @corrupt_diskspace
+```
+Note that disabling the disk space failure experiment will not cleanup /tmp for you. One way of doing this is by updating the configuration (timeout value or env vars) of you Lambda function so that a new instance is deployd:
+```
+    aws lambda update-function-configuration --function-name YOUR_FUNCTION_NAME --timeout 6
 ```
 
 

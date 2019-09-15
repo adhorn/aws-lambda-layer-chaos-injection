@@ -48,7 +48,7 @@ Example
     from chaos_lib import (
         corrupt_delay, corrupt_exception, corrupt_statuscode, SessionWithDelay)
 
-    os.environ['CHAOS_PARAM'] = 'chaoslambda.config'
+    os.environ['FAILURE_INJECTION_PARAM'] = 'chaoslambda.config'
 
     def session_request_with_delay():
     session = SessionWithDelay(delay=300)

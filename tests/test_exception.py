@@ -120,6 +120,10 @@ class TestExceptionMethodsnotenabled(unittest.TestCase):
         handler_with_exception('foo', 'bar')
         self.assert_(True)
 
+    @ignore_warnings
+    def test_handler_with_exception_arg_2(self):
+        handler_with_exception_arg_2('foo', 'bar')
+        self.assert_(True)
 
 if __name__ == '__main__':
     unittest.main()

@@ -204,7 +204,7 @@ Building and deploying:
 
   .. code:: shell
 
-      git clone git@github.com:adhorn/LatencyInjectionLayer.git
+      git clone git@github.com:adhorn/aws-lambda-layer-chaos-injection.git
 
 
 2. Build the dependencies

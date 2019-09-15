@@ -9,7 +9,7 @@ Chaos Injection Layer for AWS Lambda - chaos_lib
     :alt: Twitter
     :target: https://twitter.com/intent/tweet?text=Wow:&url=https%3A%2F%2Fgithub.com%2Fadhorn%2Faws-lambda-chaos-injection
 
-.. |issues| image:: https://img.shields.io/github/issues/adhorn/FailureInjectionLayer
+.. |issues| image:: https://img.shields.io/github/issues/adhorn/aws-lambda-layer-chaos-injection
     :alt: Issues
 
 .. |Maintenance| image:: https://img.shields.io/badge/Maintained%3F-yes-green.svg

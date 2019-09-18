@@ -189,7 +189,7 @@ Supported Decorators:
 * `@corrupt_delay` - add delay in the AWS Lambda execution
 * `@corrupt_exception` - Raise an exception during the AWS Lambda execution
 * `@corrupt_statuscode` - force AWS Lambda to return a specific HTTP error code
-* `@corrupt_filesize` - EXPERIMENTAL force AWS Lambda to return a specific HTTP error code
+* `@corrupt_filesize` - EXPERIMENTAL creates large file to do disk space attacks
 
     `Note that disabling the disk space failure experiment will not cleanup /tmp for you.`
 

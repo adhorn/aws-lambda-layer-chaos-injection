@@ -17,6 +17,7 @@ import requests
 
 logger = logging.getLogger(__name__)
 
+
 def get_config(config_key):
     """
 Retrieve the configuration from the SSM parameter store
@@ -112,6 +113,7 @@ With argument::
         return func(*args, **kwargs)
     return wrapper
 
+
 def corrupt_exception(func=None, exception_type=None, exception_msg=None):
     """
 Forces the lambda function to fail and raise an exception
@@ -178,7 +180,7 @@ With Error type and message argument::
 
     @wraps(func)
     def wrapper(*args, **kwargs):
-        _is_enabled, _  = get_config('isEnabled')
+        _is_enabled, _ = get_config('isEnabled')
         if not _is_enabled:
             return func(*args, **kwargs)
 
@@ -270,12 +272,14 @@ def corrupt_diskspace(func):
         # add injection approx rate% of the time
         if random.random() <= rate:
             print("corrupting now")
-            o = subprocess.check_output(['dd', 'if=/dev/zero', 'of=/tmp/corrupt-diskspace-'+str(time.time())+'.tmp', 'count=1024', 'bs='+str(file_size*1024)], stderr=subprocess.STDOUT)
+            o = subprocess.check_output([
+                'dd', 'if=/dev/zero', 'of=/tmp/corrupt-diskspace-' + str(time.time()) + '.tmp', 'count=1024', 'bs=' + str(file_size * 1024)], stderr=subprocess.STDOUT)
             print(o)
             return result
         else:
             return result
     return wrapper
+
 
 class SessionWithDelay(requests.Session):
     """
